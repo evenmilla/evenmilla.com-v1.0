@@ -11,7 +11,7 @@ html, body
 body {
     overflow-x: hidden;
     background-color: black;
-    background-image: url(back.png); /* Ensure the path is correct */
+    background-image: url(Back.png); /* Ensure the path is correct */
     background-position: center; /* Center the background image */
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: contain; /* Adjust the background size for smaller devices */}
