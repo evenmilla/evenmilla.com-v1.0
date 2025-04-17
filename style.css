@@ -14,7 +14,7 @@ body {
     background-image: url(Back.png); /* Ensure the path is correct */
     background-position: center; /* Center the background image */
     background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: contain; /* Adjust the background size for smaller devices */}
+    background-size: contain; /* Adjust the background size for smaller devices */ }
 section {
     min-height: 100vh;
     position: fixed;
@@ -89,6 +89,46 @@ section {
     background-color: transparent; /* Remove highlight color on click */
 }
 
+.float-text-top {
+    width: 100px;
+    height: 100px;
+    background-image: url(fileexplorer.png); /* Ensure the path is correct */
+    background-size: calc(100% - 10px); /* Scale the image down to leave a 5-pixel border on each side */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    background-position: center top; /* Align the image closer to the top */
+    -webkit-touch-callout: none;
+    position: absolute;
+    left: 10px; /* Match the left distance of the bottom icon */
+    top: 10px; /* Match the top distance of the bottom icon */
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Align text at the bottom */
+    align-items: center;
+    text-align: center;
+    padding: 0; /* Remove padding */
+    box-sizing: border-box; /* Include padding in the element's dimensions */
+}
+
+.float-text-top:hover {
+    background-color: rgba(0, 171, 239, 0.5); /* Semi-transparent highlight color */
+}
+
+.float-text-top:active {
+    background-color: transparent; /* Remove highlight color on click */
+}
+
+.float-text-top span {
+    font-family: 'Quicksand', sans-serif; /* Update to use Quicksand font */
+    font-size: 12px;
+    color: white;
+    position: absolute; /* Position the text absolutely within the box */
+    bottom: 1px; /* Move the text 1 pixel from the bottom */
+    left: 50%; /* Center the text horizontally */
+    transform: translateX(-50%); /* Adjust for horizontal centering */
+    pointer-events: none; /* Prevent interaction with the text */
+}
+
 .float-card-info {
     width: 390px;
     height: 530px;
@@ -132,14 +172,14 @@ section {
 
 .link-box {
     display: block;
-    width: 330px;
-    height: 32px;
+    width: 335px; /* Keep the width consistent */
+    height: 37px; /* Increase the height to fill the gap (32px + 5px gap) */
     background-color: transparent; /* Transparent background */
     color: rgba(255, 255, 255, 0);
     text-align: center;
     text-decoration: none;
     transition: background-color 0.3s ease;
-    margin-bottom: 5px; /* Add space between the link boxes */
+    margin-bottom: 0; /* Remove the gap between the boxes */
     pointer-events: auto; /* Allow interaction with the link boxes */
 }
 
@@ -152,10 +192,107 @@ section {
     position: absolute;
     bottom: 300px; /* Initial vertical position */
     left: 0; /* Initial horizontal position within the viewport */
-    z-index: 200; /* Ensure the link boxes container appears above the float card */
+    z-index: 300; /* Ensure the link boxes container appears above the float card and popup */
 }
 
 .link-boxes-container.active {
     display: block; /* Show the link boxes when active */
+}
+
+.black-window {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    width: 1000px; /* Fixed width */
+    height: calc(1000px * 9 / 16); /* Maintain 16:9 aspect ratio */
+    background-color: black;
+    transform: translate(-50%, -50%); /* Center the window */
+    z-index: 300; /* Ensure it appears above other elements */
+    border: 2px solid white; /* Optional: Add a border for better visibility */
+    cursor: move; /* Indicate the window is draggable */
+}
+
+.black-window .close-window {
+    position: absolute;
+    top: 0px; /* Moved up by 5px */
+    right: 10px;
+    font-size: 30px; /* Bold with a size of 30px */
+    font-family: "Quicksand", sans-serif; /* Use Quicksand font */
+    font-weight: bold; /* Ensure bold style */
+    color: white;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    user-select: none; /* Prevent text highlighting */
+}
+
+.black-window .window-title {
+    position: absolute;
+    top: 5px; /* Moved up by 5px */
+    left: 10px;
+    font-size: 30px; /* Keep the size of 30px */
+    font-family: "Quicksand", sans-serif; /* Use Quicksand font */
+    font-weight: normal; /* Ensure regular style */
+    color: white;
+    user-select: none; /* Prevent text highlighting */
+}
+
+.black-window .close-window:hover {
+    color: red; /* Highlight red when hovered */
+}
+
+.black-window.dragging, .second-black-window.dragging {
+    cursor: grabbing; /* Show grabbing hand when dragging */
+}
+
+.black-window .drag-strip {
+    cursor: grab; /* Show grab icon when hovering over the drag strip */
+}
+
+.float-text-inside {
+    width: 100px; /* Match the size of other float text */
+    height: 100px; /* Match the size of other float text */
+    background-image: url('question.png'); 
+    background-size: calc(100% - 15px); /* Scale the image down slightly more */
+    background-repeat: no-repeat;
+    background-position: center top; /* Align the image closer to the top */
+    position: absolute;
+    top: 45px; /* Move it down 45px from the top of the black box */
+    left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Add transition for highlight effect */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Align text at the bottom */
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box; /* Include padding in dimensions */
+}
+
+.float-text-inside:hover {
+    background-color: rgba(0, 171, 239, 0.5); /* Semi-transparent highlight color */
+}
+
+.float-text-inside:active {
+    background-color: transparent; /* Remove highlight color on click */
+}
+
+.float-text-inside span {
+    font-family: 'Quicksand', sans-serif; /* Use Quicksand font */
+    font-size: 12px;
+    color: white;
+    position: absolute; /* Position the text absolutely within the box */
+    bottom: 1px; /* Move the text 1 pixel from the bottom */
+    left: 50%; /* Center the text horizontally */
+    transform: translateX(-50%); /* Adjust for horizontal centering */
+    pointer-events: none; /* Prevent interaction with the text */
+}
+
+.second-black-window {
+    cursor: default; /* Default cursor for the entire window */
+}
+
+.second-black-window .drag-strip {
+    cursor: grab; /* Show grab icon only when hovering over the top bar */
 }
 
