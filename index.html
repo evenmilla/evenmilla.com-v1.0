@@ -23,17 +23,23 @@
         <i class="floatcard-links"></i>
         <span>explorer</span> <!-- Add text below the icon -->
     </div>
-    <div class="black-window" style="z-index: 50; width: 400px; height: 225px; position: absolute; border: 2px solid rgb(0, 173, 239);">
-        <div class="drag-strip" style="height: 40px; width: 100%; background-color: rgba(0, 171, 239, 0.952); cursor: move; position: absolute; top: -2; z-index: 1;"></div> <!-- Drag strip -->
+    <div class="black-window" style="z-index: 50; width: 335px; height: calc(375px * 3 / 4 + 40); position: absolute; border: 2px solid rgb(0, 173, 239);">
+        <div class="drag-strip" style="height: 40px; width: 100%; background-color: #00abeff3; cursor: move; position: absolute; top: -2; z-index: 1;"></div> <!-- Drag strip -->
         <div class="window-title" style="position: absolute; top: 5px; left: 10px; color: white; font-size: 24px; font-family: 'Quicksand', sans-serif; font-weight: normal; pointer-events: none; z-index: 2;">explorer</div> <!-- Update explorer text -->
         <div class="close-window" style="z-index: 3;">X</div> <!-- Ensure X is above the strip -->
         <div class="resize-corner" style="width: 15px; height: 15px; position: absolute; bottom: 1px; right: 1px; cursor: nwse-resize; background: rgb(0, 173, 239); clip-path: polygon(0 100%, 100% 100%, 100% 0);"></div> <!-- Resize visual cue -->
         <div class="float-text-inside">
             <span>sample.txt</span> <!-- Add text below the icon -->
         </div>
+        <div class="float-text-inside" style="top: 150px;"> <!-- Positioned 5px below the first float text -->
+            <span>test.txt</span> <!-- Add text below the icon -->
+        </div>
+        <div class="float-text-inside" style="top: 255px;"> <!-- Positioned 5px below the second float text -->
+            <span>odd.txt</span> <!-- Add text below the icon -->
+        </div>
     </div>
-    <div class="black-window second-black-window" style="z-index: 49; width: 200px; height: calc(200px * 9 / 16); position: absolute; border: 2px solid rgb(0, 173, 239); display: none;">
-        <div class="drag-strip" style="height: 40px; width: 100%; background-color: rgba(0, 171, 239, 0.952); cursor: move; position: absolute; top: -2; z-index: 1;"></div> <!-- Drag strip -->
+    <div class="black-window second-black-window" style="z-index: 49; width: 200px; height: calc(200px * 9 / 16 + 40); position: absolute; border: 2px solid rgb(0, 173, 239); display: none;">
+        <div class="drag-strip" style="height: 40px; width: 100%; background-color: #00abeff3; cursor: move; position: absolute; top: -2; z-index: 1;"></div> <!-- Drag strip -->
         <div class="window-title" style="position: absolute; top: 5px; left: 10px; color: white; font-size: 24px; font-family: 'Quicksand', sans-serif; font-weight: normal; pointer-events: none; z-index: 2;">sample.txt</div> <!-- Update title -->
         <div class="close-window second-close-window" style="z-index: 3;">X</div> <!-- Ensure X is above the strip -->
         <div class="resize-corner" style="width: 15px; height: 15px; position: absolute; bottom: 1px; right: 1px; cursor: nwse-resize; background: rgb(0, 173, 239); clip-path: polygon(0 100%, 100% 100%, 100% 0);"></div> <!-- Resize visual cue -->

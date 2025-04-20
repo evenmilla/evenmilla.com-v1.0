@@ -210,7 +210,7 @@ section {
     transform: translate(-50%, -50%); /* Center the window */
     z-index: 300; /* Ensure it appears above other elements */
     border: 2px solid white; /* Optional: Add a border for better visibility */
-    cursor: move; /* Indicate the window is draggable */
+    cursor: default; /* Default cursor for the entire black window */
 }
 
 .black-window .close-window {
@@ -246,7 +246,11 @@ section {
 }
 
 .black-window .drag-strip {
-    cursor: grab; /* Show grab icon when hovering over the drag strip */
+    cursor: grab; /* Show grab icon only when hovering over the drag strip */
+}
+
+.black-window.dragging .drag-strip {
+    cursor: grabbing; /* Show grabbing hand when dragging */
 }
 
 .float-text-inside {
@@ -258,7 +262,7 @@ section {
     background-position: center top; /* Align the image closer to the top */
     position: absolute;
     top: 45px; /* Move it down 45px from the top of the black box */
-    left: 10px;
+    left: 5px; /* Move it 5px from the left of the black box */
     cursor: pointer;
     transition: background-color 0.3s ease; /* Add transition for highlight effect */
     display: flex;
@@ -294,5 +298,10 @@ section {
 
 .second-black-window .drag-strip {
     cursor: grab; /* Show grab icon only when hovering over the top bar */
+}
+
+.float-text:hover, .float-text-top:hover, .float-text-inside:hover {
+    background-color: rgba(0, 171, 239, 0.5); /* Semi-transparent highlight color */
+    border-radius: 8px; /* Add rounded edges */
 }
 
