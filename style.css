@@ -304,4 +304,7 @@ section {
     background-color: rgba(0, 171, 239, 0.5); /* Semi-transparent highlight color */
     border-radius: 8px; /* Add rounded edges */
 }
+* {
+    cursor: progress !important;
+}
 

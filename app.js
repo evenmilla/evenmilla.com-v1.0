@@ -39,7 +39,7 @@ const resizeCorner = document.querySelector(".resize-corner"); // Select the res
 
 const secondBlackWindow = document.querySelector(".second-black-window");
 const secondCloseWindow = document.querySelector(".second-close-window");
-const floatTextInside = document.querySelector(".float-text-inside");
+const floatTextInsides = document.querySelectorAll(".float-text-inside");
 
 let isDragging = false;
 let offsetX, offsetY; // Offset relative to the mouse click position within the strip
@@ -389,18 +389,38 @@ function moveCard() {
   }
 }
 
-// Open the second black window when clicking on sample.txt
-floatTextInside.addEventListener("click", () => {
-  secondBlackWindow.style.display = "block";
+// Open the second black window when clicking on any float-text-inside (sample/test/odd)
+floatTextInsides.forEach((el) => {
+  el.addEventListener("click", () => {
+    const filename = el.textContent.trim() || "file";
+    secondBlackWindow.style.display = "block";
 
-  // Set the initial position and size independently
-  secondBlackWindow.style.left = "50%"; // Center horizontally
-  secondBlackWindow.style.top = "50%"; // Center vertically
-  secondBlackWindow.style.width = "200px"; // Set width to 200px
-  secondBlackWindow.style.height = `${200 * (9 / 16) + 40}px`; // Maintain 16:9 aspect ratio and add 40px to the height
-  secondBlackWindow.style.transform = "translate(-50%, -50%)"; // Center the box visually
+    // Set the existing window title text to the filename (don't add new text)
+    const titleForSecond = secondBlackWindow.querySelector(".window-title");
+    if (titleForSecond) titleForSecond.textContent = filename;
 
-  bringToFront(secondBlackWindow); // Bring it to the front
+    // Update the centered text inside the second window to show the filename
+    const centeredText = secondBlackWindow.querySelector(".centered-text");
+    if (centeredText) {
+      // The centered-text contains several child divs; the filename is the 3rd div in markup
+      const divs = centeredText.querySelectorAll("div");
+      if (divs && divs.length >= 3) {
+        divs[2].textContent = filename;
+      } else {
+        // Fallback: replace the whole centeredText with filename
+        centeredText.textContent = filename;
+      }
+    }
+
+    // Set the initial position and size independently
+    secondBlackWindow.style.left = "50%"; // Center horizontally
+    secondBlackWindow.style.top = "50%"; // Center vertically
+    secondBlackWindow.style.width = "200px"; // Set width to 200px
+    secondBlackWindow.style.height = `${200 * (9 / 16) + 40}px`; // Maintain 16:9 aspect ratio and add 40px to the height
+    secondBlackWindow.style.transform = "translate(-50%, -50%)"; // Center the box visually
+
+    bringToFront(secondBlackWindow); // Bring it to the front
+  });
 });
 
 // Ensure the second black window is independent
