@@ -1,11 +1,250 @@
 const cursor = document.querySelector(".cursor");
+const selectionBox = document.querySelector(".selection-box");
+let isSelecting = false;
+let selectionStartX = 0;
+let selectionStartY = 0;
+let selectedElements = new Set(); // Track selected elements
+let justFinishedSelecting = false; // Track if we just finished a selection drag
+
+window.addEventListener("mousedown", (e) => {
+  // Don't start selection on interactive elements
+  if (e.target.closest(".float-text, .float-text-top, .float-text-placeholder, .black-window, .float-card-info, .link-boxes-container, .gg-close-r")) {
+    return;
+  }
+  
+  // Check if there are existing highlights and clear them
+  const selectableElements = document.querySelectorAll(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+  if (selectableElements.length > 0) {
+    selectableElements.forEach(el => {
+      el.classList.remove("selected");
+    });
+  }
+  
+  // Always start a new selection on mousedown (even after clearing highlights)
+  isSelecting = true;
+  selectionStartX = e.pageX;
+  selectionStartY = e.pageY;
+  selectionBox.style.display = "block";
+  selectionBox.style.left = selectionStartX + "px";
+  selectionBox.style.top = selectionStartY + "px";
+  selectionBox.style.width = "0px";
+  selectionBox.style.height = "0px";
+  
+  // Close the bottom left menu if it's open
+  if (card.classList.contains("active")) {
+    card.classList.remove("active");
+    linkBoxesContainer.style.display = "none";
+    linkBoxesContainer.classList.remove("active");
+  }
+  
+  // Prevent text selection while dragging
+  document.body.style.userSelect = "none";
+});
 
 window.addEventListener("mousemove", (e) => {
   cursor.style.left = e.pageX + "px";
   cursor.style.top = e.pageY + "px";
   cursor.setAttribute("data-fromTop", cursor.offsetTop - scrollY);
-  // console.log(e)
+
+  if (isSelecting) {
+    const currentX = e.pageX;
+    const currentY = e.pageY;
+    
+    const minX = Math.min(selectionStartX, currentX);
+    const minY = Math.min(selectionStartY, currentY);
+    const maxX = Math.max(selectionStartX, currentX);
+    const maxY = Math.max(selectionStartY, currentY);
+    
+    const width = maxX - minX;
+    const height = maxY - minY;
+    
+    selectionBox.style.left = minX + "px";
+    selectionBox.style.top = minY + "px";
+    selectionBox.style.width = width + "px";
+    selectionBox.style.height = height + "px";
+    
+    // Highlight elements inside the box while dragging
+    const boxRect = selectionBox.getBoundingClientRect();
+    const selectableElements = document.querySelectorAll(".float-text, .float-text-top, .float-text-placeholder, .float-text-inside");
+    
+    selectableElements.forEach(el => {
+      const elementRect = el.getBoundingClientRect();
+      
+      // Check if element overlaps with selection box
+      if (!(boxRect.right < elementRect.left || 
+            boxRect.left > elementRect.right || 
+            boxRect.bottom < elementRect.top || 
+            boxRect.top > elementRect.bottom)) {
+        el.classList.add("selected");
+      } else {
+        el.classList.remove("selected");
+      }
+    });
+  }
 });
+
+window.addEventListener("mouseup", () => {
+  if (isSelecting) {
+    isSelecting = false;
+    justFinishedSelecting = true;
+    
+    // Restore text selection
+    document.body.style.userSelect = "auto";
+    
+    // Hide selection box but keep highlights
+    selectionBox.style.display = "none";
+    
+    // Reset the flag after a brief moment to allow the next click to clear highlights
+    setTimeout(() => {
+      justFinishedSelecting = false;
+    }, 50);
+  }
+});
+
+// Reset selection when clicking on empty area
+window.addEventListener("click", (e) => {
+  // If we just finished selecting, don't clear highlights on this click
+  if (justFinishedSelecting) {
+    return;
+  }
+  
+  // Check if clicking on a highlighted box - if so, clear highlights and let the click propagate
+  const clickedElement = e.target.closest(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+  if (clickedElement) {
+    // Clear all highlights
+    const selectableElements = document.querySelectorAll(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+    selectableElements.forEach(el => {
+      el.classList.remove("selected");
+    });
+    // Allow the click to propagate to the element
+    return;
+  }
+  
+  // If clicking on other interactive elements, don't reset
+  if (e.target.closest(".float-text, .float-text-top, .float-text-placeholder, .black-window, .float-card-info, .link-boxes-container, .gg-close-r")) {
+    return;
+  }
+  
+  // Clear highlights if they exist
+  const selectableElements = document.querySelectorAll(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+  if (selectableElements.length > 0) {
+    selectableElements.forEach(el => {
+      el.classList.remove("selected");
+    });
+  }
+});
+
+// Touch support for selection box
+window.addEventListener("touchstart", (e) => {
+  // If we just finished selecting, don't clear highlights on this touch
+  if (justFinishedSelecting) {
+    return;
+  }
+  
+  // Check if touching a highlighted box - if so, clear highlights and let the touch propagate
+  const touchedElement = e.target.closest(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+  if (touchedElement) {
+    // Clear all highlights
+    const selectableElements = document.querySelectorAll(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+    selectableElements.forEach(el => {
+      el.classList.remove("selected");
+    });
+    // Allow the touch to propagate to the element
+    return;
+  }
+  
+  // If touching on other interactive elements (except the menu), don't start selection
+  if (e.target.closest(".float-text, .float-text-top, .float-text-placeholder, .black-window, .float-card-info, .gg-close-r")) {
+    return;
+  }
+  
+  // Always close the menu if it's open when starting a selection
+  if (card.classList.contains("active")) {
+    card.classList.remove("active");
+    linkBoxesContainer.style.display = "none";
+    linkBoxesContainer.classList.remove("active");
+  }
+  
+  // Clear highlights on touch
+  const selectableElements = document.querySelectorAll(".float-text.selected, .float-text-top.selected, .float-text-placeholder.selected, .float-text-inside.selected");
+  if (selectableElements.length > 0) {
+    selectableElements.forEach(el => {
+      el.classList.remove("selected");
+    });
+  }
+  
+  // Always start a new selection on touchstart (even after clearing highlights)
+  const touch = e.touches[0];
+  isSelecting = true;
+  selectionStartX = touch.clientX + window.scrollX;
+  selectionStartY = touch.clientY + window.scrollY;
+  selectionBox.style.display = "block";
+  selectionBox.style.left = selectionStartX + "px";
+  selectionBox.style.top = selectionStartY + "px";
+  selectionBox.style.width = "0px";
+  selectionBox.style.height = "0px";
+  
+  // Prevent text selection while dragging
+  document.body.style.userSelect = "none";
+});
+
+window.addEventListener("touchmove", (e) => {
+  if (isSelecting) {
+    const touch = e.touches[0];
+    const currentX = touch.clientX + window.scrollX;
+    const currentY = touch.clientY + window.scrollY;
+    
+    const minX = Math.min(selectionStartX, currentX);
+    const minY = Math.min(selectionStartY, currentY);
+    const maxX = Math.max(selectionStartX, currentX);
+    const maxY = Math.max(selectionStartY, currentY);
+    
+    const width = maxX - minX;
+    const height = maxY - minY;
+    
+    selectionBox.style.left = minX + "px";
+    selectionBox.style.top = minY + "px";
+    selectionBox.style.width = width + "px";
+    selectionBox.style.height = height + "px";
+    
+    // Highlight elements inside the box while dragging
+    const boxRect = selectionBox.getBoundingClientRect();
+    const selectableElements = document.querySelectorAll(".float-text, .float-text-top, .float-text-placeholder, .float-text-inside");
+    
+    selectableElements.forEach(el => {
+      const elementRect = el.getBoundingClientRect();
+      
+      // Check if element overlaps with selection box
+      if (!(boxRect.right < elementRect.left || 
+            boxRect.left > elementRect.right || 
+            boxRect.bottom < elementRect.top || 
+            boxRect.top > elementRect.bottom)) {
+        el.classList.add("selected");
+      } else {
+        el.classList.remove("selected");
+      }
+    });
+  }
+});
+
+window.addEventListener("touchend", (e) => {
+  if (isSelecting) {
+    isSelecting = false;
+    justFinishedSelecting = true;
+    
+    // Restore text selection
+    document.body.style.userSelect = "auto";
+    
+    // Hide selection box but keep highlights
+    selectionBox.style.display = "none";
+    
+    // Reset the flag after a brief moment to allow the next touch to clear highlights
+    setTimeout(() => {
+      justFinishedSelecting = false;
+    }, 10);
+  }
+});
+
 window.addEventListener("scroll", () => {
   const fromTop = cursor.getAttribute("data-fromTop");
   cursor.style.top = scrollY + parseInt(fromTop) + "px";
@@ -32,6 +271,7 @@ const close = document.querySelector(".gg-close-r");
 const linkBoxesContainer = document.querySelector(".link-boxes-container"); // Select the link boxes container
 
 const topTouchButton = document.querySelector(".float-text-top");
+const placeholderButton = document.querySelector(".float-text-placeholder");
 const blackWindow = document.querySelector(".black-window");
 const closeWindow = document.querySelector(".close-window");
 const dragStrip = document.querySelector(".drag-strip"); // Select the drag strip
@@ -44,7 +284,7 @@ const floatTextInsides = document.querySelectorAll(".float-text-inside");
 let isDragging = false;
 let offsetX, offsetY; // Offset relative to the mouse click position within the strip
 let isResizing = false;
-let activeZIndex = 50; // Track the highest z-index
+let activeZIndex = 100; // Track the highest z-index
 
 // Variables for the second black window
 let isDraggingSecond = false;
@@ -341,6 +581,24 @@ touchButton.addEventListener("click", () => {
   }
 });
 
+// Close the menu when clicking outside of it
+document.addEventListener("click", (e) => {
+  // Check if the card is open
+  if (card.classList.contains("active")) {
+    // If clicking on the menu button, don't close (let the toggle handle it)
+    if (e.target.closest(".float-text")) {
+      return;
+    }
+    
+    // If clicking outside the menu or link boxes, close them
+    if (!e.target.closest(".float-card-info, .link-boxes-container")) {
+      card.classList.remove("active");
+      linkBoxesContainer.style.display = "none";
+      linkBoxesContainer.classList.remove("active");
+    }
+  }
+});
+
 close.addEventListener("click", moveCard);
 
 topTouchButton.addEventListener("click", () => {
@@ -376,6 +634,28 @@ topTouchButton.addEventListener("click", () => {
 closeWindow.addEventListener("click", () => {
   // Hide the black window
   blackWindow.style.display = "none";
+});
+
+// Store audio instance globally to prevent multiple plays
+let placeholderAudio = null;
+
+placeholderButton.addEventListener("click", () => {
+  // Only play if no audio is currently playing
+  if (!placeholderAudio || placeholderAudio.paused) {
+    // Create new audio instance and play it
+    placeholderAudio = new Audio("fone_f_151.wav");
+    
+    // Add loading state to the body when audio starts playing
+    document.body.classList.add("loading");
+    
+    // Remove loading state when audio finishes playing
+    placeholderAudio.addEventListener("ended", () => {
+      document.body.classList.remove("loading");
+    });
+    
+    placeholderAudio.play();
+  }
+  // If audio is already playing, do nothing (can't restart)
 });
 
 function moveCard() {
