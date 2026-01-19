@@ -304,35 +304,39 @@ dragStrip.addEventListener("mousedown", (e) => {
   const rect = blackWindow.getBoundingClientRect();
   offsetX = e.clientX - rect.left;
   offsetY = e.clientY - rect.top;
+  // Freeze current visual position into inline left/top and remove centering transform
+  blackWindow.style.left = rect.left + "px";
+  blackWindow.style.top = rect.top + "px";
+  blackWindow.style.transform = "none";
   bringToFront(blackWindow);
   e.preventDefault();
 });
 
 window.addEventListener("mousemove", (e) => {
   if (isDragging && blackWindow.style.display === "block") {
-    const newLeft = e.clientX;
-    const newTop = e.clientY;
+    // Use the initial click offset so the window follows from the clicked point
+    const newLeft = e.clientX - offsetX;
+    const newTop = e.clientY - offsetY;
 
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const boxWidth = blackWindow.offsetWidth / 2; // Half the width of the box
-    const boxHeight = blackWindow.offsetHeight / 2; // Half the height of the box
+    const boxWidth = blackWindow.offsetWidth; // Full box width for bounds
+    const boxHeight = blackWindow.offsetHeight; // Full box height for bounds
 
     let adjustedLeft = newLeft;
     let adjustedTop = newTop;
 
-    // Check horizontal boundaries
-    if (newLeft < boxWidth) {
-      adjustedLeft = boxWidth; // Prevent moving beyond the left edge
-    } else if (newLeft + boxWidth > screenWidth) {
-      adjustedLeft = screenWidth - boxWidth; // Prevent moving beyond the right edge
+    // Constrain within viewport
+    if (adjustedLeft < 0) {
+      adjustedLeft = 0;
+    } else if (adjustedLeft + boxWidth > screenWidth) {
+      adjustedLeft = screenWidth - boxWidth;
     }
 
-    // Check vertical boundaries
-    if (newTop < boxHeight) {
-      adjustedTop = boxHeight; // Prevent moving beyond the top edge
-    } else if (newTop + boxHeight > screenHeight) {
-      adjustedTop = screenHeight - boxHeight; // Prevent moving beyond the bottom edge
+    if (adjustedTop < 0) {
+      adjustedTop = 0;
+    } else if (adjustedTop + boxHeight > screenHeight) {
+      adjustedTop = screenHeight - boxHeight;
     }
 
     blackWindow.style.left = `${adjustedLeft}px`;
@@ -352,6 +356,10 @@ dragStrip.addEventListener("touchstart", (e) => {
   const touch = e.touches[0]; // Get the first touch point
   offsetX = touch.clientX - rect.left;
   offsetY = touch.clientY - rect.top;
+  // Freeze current visual position into inline left/top and remove centering transform
+  blackWindow.style.left = rect.left + "px";
+  blackWindow.style.top = rect.top + "px";
+  blackWindow.style.transform = "none";
   bringToFront(blackWindow);
   e.preventDefault(); // Prevent default touch behavior
 });
@@ -363,29 +371,29 @@ blackWindow.addEventListener("mousedown", () => {
 window.addEventListener("touchmove", (e) => {
   if (isDragging && blackWindow.style.display === "block") {
     const touch = e.touches[0]; // Get the first touch point
-    const newLeft = touch.clientX;
-    const newTop = touch.clientY;
+    // Use the initial touch offset so the window follows from the touch point
+    const newLeft = touch.clientX - offsetX;
+    const newTop = touch.clientY - offsetY;
 
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const boxWidth = blackWindow.offsetWidth / 2; // Half the width of the box
-    const boxHeight = blackWindow.offsetHeight / 2; // Half the height of the box
+    const boxWidth = blackWindow.offsetWidth; // Full box width for bounds
+    const boxHeight = blackWindow.offsetHeight; // Full box height for bounds
 
     let adjustedLeft = newLeft;
     let adjustedTop = newTop;
 
-    // Check horizontal boundaries
-    if (newLeft < boxWidth) {
-      adjustedLeft = boxWidth; // Prevent moving beyond the left edge
-    } else if (newLeft + boxWidth > screenWidth) {
-      adjustedLeft = screenWidth - boxWidth; // Prevent moving beyond the right edge
+    // Constrain within viewport
+    if (adjustedLeft < 0) {
+      adjustedLeft = 0;
+    } else if (adjustedLeft + boxWidth > screenWidth) {
+      adjustedLeft = screenWidth - boxWidth;
     }
 
-    // Check vertical boundaries
-    if (newTop < boxHeight) {
-      adjustedTop = boxHeight; // Prevent moving beyond the top edge
-    } else if (newTop + boxHeight > screenHeight) {
-      adjustedTop = screenHeight - boxHeight; // Prevent moving beyond the bottom edge
+    if (adjustedTop < 0) {
+      adjustedTop = 0;
+    } else if (adjustedTop + boxHeight > screenHeight) {
+      adjustedTop = screenHeight - boxHeight;
     }
 
     blackWindow.style.left = `${adjustedLeft}px`;
@@ -712,6 +720,14 @@ secondBlackWindow.addEventListener("mousedown", () => {
 secondBlackWindow.querySelector(".drag-strip").addEventListener("mousedown", (e) => {
   isDraggingSecond = true;
   secondBlackWindow.classList.add("dragging"); // Add dragging class
+  const rect = secondBlackWindow.getBoundingClientRect();
+  // store offset so it follows from click point
+  offsetXSecond = e.clientX - rect.left;
+  offsetYSecond = e.clientY - rect.top;
+  // freeze current visual position into inline left/top and remove centering transform
+  secondBlackWindow.style.left = rect.left + "px";
+  secondBlackWindow.style.top = rect.top + "px";
+  secondBlackWindow.style.transform = "none";
   bringToFront(secondBlackWindow);
   e.preventDefault();
 });
@@ -719,36 +735,38 @@ secondBlackWindow.querySelector(".drag-strip").addEventListener("mousedown", (e)
 // Add touch support for dragging the second black window (sample.txt)
 secondBlackWindow.querySelector(".drag-strip").addEventListener("touchstart", (e) => {
   isDraggingSecond = true;
+  const rect = secondBlackWindow.getBoundingClientRect();
+  const touch = e.touches[0];
+  offsetXSecond = touch.clientX - rect.left;
+  offsetYSecond = touch.clientY - rect.top;
+  // freeze current visual position into inline left/top and remove centering transform
+  secondBlackWindow.style.left = rect.left + "px";
+  secondBlackWindow.style.top = rect.top + "px";
+  secondBlackWindow.style.transform = "none";
   bringToFront(secondBlackWindow);
   e.preventDefault(); // Prevent default touch behavior
 });
 
 window.addEventListener("mousemove", (e) => {
   if (isDraggingSecond && secondBlackWindow.style.display === "block") {
-    const newLeft = e.clientX;
-    const newTop = e.clientY;
+    // follow stored offset so it doesn't jump to center
+    const newLeft = e.clientX - offsetXSecond;
+    const newTop = e.clientY - offsetYSecond;
 
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const boxWidth = secondBlackWindow.offsetWidth / 2; // Half the width of the box
-    const boxHeight = secondBlackWindow.offsetHeight / 2; // Half the height of the box
+    const boxWidth = secondBlackWindow.offsetWidth; // full width
+    const boxHeight = secondBlackWindow.offsetHeight; // full height
 
     let adjustedLeft = newLeft;
     let adjustedTop = newTop;
 
-    // Check horizontal boundaries
-    if (newLeft < boxWidth) {
-      adjustedLeft = boxWidth; // Prevent moving beyond the left edge
-    } else if (newLeft + boxWidth > screenWidth) {
-      adjustedLeft = screenWidth - boxWidth; // Prevent moving beyond the right edge
-    }
+    // Constrain within viewport
+    if (adjustedLeft < 0) adjustedLeft = 0;
+    else if (adjustedLeft + boxWidth > screenWidth) adjustedLeft = screenWidth - boxWidth;
 
-    // Check vertical boundaries
-    if (newTop < boxHeight) {
-      adjustedTop = boxHeight; // Prevent moving beyond the top edge
-    } else if (newTop + boxHeight > screenHeight) {
-      adjustedTop = screenHeight - boxHeight; // Prevent moving beyond the bottom edge
-    }
+    if (adjustedTop < 0) adjustedTop = 0;
+    else if (adjustedTop + boxHeight > screenHeight) adjustedTop = screenHeight - boxHeight;
 
     secondBlackWindow.style.left = `${adjustedLeft}px`;
     secondBlackWindow.style.top = `${adjustedTop}px`;
@@ -758,30 +776,22 @@ window.addEventListener("mousemove", (e) => {
 window.addEventListener("touchmove", (e) => {
   if (isDraggingSecond) {
     const touch = e.touches[0]; // Get the first touch point
-    const newLeft = touch.clientX;
-    const newTop = touch.clientY;
+    const newLeft = touch.clientX - offsetXSecond;
+    const newTop = touch.clientY - offsetYSecond;
 
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const boxWidth = secondBlackWindow.offsetWidth / 2; // Half the width of the box
-    const boxHeight = secondBlackWindow.offsetHeight / 2; // Half the height of the box
+    const boxWidth = secondBlackWindow.offsetWidth; // full width
+    const boxHeight = secondBlackWindow.offsetHeight; // full height
 
     let adjustedLeft = newLeft;
     let adjustedTop = newTop;
 
-    // Check horizontal boundaries
-    if (newLeft < boxWidth) {
-      adjustedLeft = boxWidth; // Prevent moving beyond the left edge
-    } else if (newLeft + boxWidth > screenWidth) {
-      adjustedLeft = screenWidth - boxWidth; // Prevent moving beyond the right edge
-    }
+    if (adjustedLeft < 0) adjustedLeft = 0;
+    else if (adjustedLeft + boxWidth > screenWidth) adjustedLeft = screenWidth - boxWidth;
 
-    // Check vertical boundaries
-    if (newTop < boxHeight) {
-      adjustedTop = boxHeight; // Prevent moving beyond the top edge
-    } else if (newTop + boxHeight > screenHeight) {
-      adjustedTop = screenHeight - boxHeight; // Prevent moving beyond the bottom edge
-    }
+    if (adjustedTop < 0) adjustedTop = 0;
+    else if (adjustedTop + boxHeight > screenHeight) adjustedTop = screenHeight - boxHeight;
 
     secondBlackWindow.style.left = `${adjustedLeft}px`;
     secondBlackWindow.style.top = `${adjustedTop}px`;
